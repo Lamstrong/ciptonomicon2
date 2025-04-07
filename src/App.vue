@@ -1,5 +1,6 @@
 <template>
   <add-ticker-component @create-ticker="addTicker" />
+  <!-- <warning v-if="checker" /> -->
   <div class="filter_wrapper">
     <div class="filter_title">Найти:</div>
     <input v-model="filter" class="filter_input" type="text" />
@@ -26,10 +27,12 @@
 import { setInterval } from "core-js";
 import { loadTicker, subscribeToTicker } from "./api";
 import AddTickerComponent from "./components/addTickerComponent.vue";
+import Warning from "./components/Warning.vue";
 
 export default {
   components: {
     AddTickerComponent,
+    Warning,
   },
 
   data() {
@@ -47,7 +50,7 @@ export default {
     if (storageItem) {
       this.tickerList = JSON.parse(storageItem);
     }
-    setInterval(() => this.updateTickers(), 5000);
+    setInterval(() => this.updateTickers(), 4000);
   },
 
   watch: {
@@ -71,7 +74,11 @@ export default {
     },
 
     filteredTickers() {
-      return this.tickerList.filter((el) => el.name.includes(this.filter));
+      try {
+        return this.tickerList.filter((el) => el.name.includes(this.filter));
+      } catch (err) {
+        console.log(err);
+      }
     },
 
     async updateTickers() {
@@ -92,7 +99,7 @@ export default {
       });
     },
 
-    addTicker(tickerInput) {
+    addTicker(tickerInput, checkSimular) {
       const newTicker = {
         id: Date.now(),
         name: tickerInput,
@@ -101,11 +108,11 @@ export default {
 
       console.log(tickerInput);
 
-      // const findSimilarTicker = this.tickerList.find((el) => {
-      //   return el.name === newTicker.name;
-      // });
+      const findSimilarTicker = this.tickerList.find((el) => {
+        return el.name === newTicker.name;
+      });
 
-      if (tickerInput.length !== 0) {
+      if (tickerInput.length !== 0 && !findSimilarTicker) {
         this.tickerList.push(newTicker);
         this.filter = "";
 
@@ -113,6 +120,9 @@ export default {
           "criptonomicon-list",
           JSON.stringify(this.tickerList)
         );
+      } else if (findSimilarTicker) {
+        this.checker = !this.checker;
+        return;
       }
     },
 

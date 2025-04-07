@@ -15,7 +15,8 @@ export const loadTicker = (tickers) =>
       Object.fromEntries(
         Object.entries(rawData).map(([key, value]) => [key, value.USD])
       )
-    );
+    )
+    .catch((err) => console.log(err));
 
 // получать стоимость криптовалютных пар с АПИшки? НЕТ
 // получать ОБНОВЛЕНИЯ стоимости криптовалютных пар с АПИшки? ДА

@@ -9,12 +9,6 @@
         type="text"
       />
 
-      <div class="warning_wrapper">
-        <p v-if="checker" style="color: red" class="warning">
-          Такой тикер уже добавлен
-        </p>
-      </div>
-
       <add-button @click="addTicker" class="add_btn">Добавить</add-button>
     </form>
   </div>
@@ -36,7 +30,6 @@ export default {
   methods: {
     addTicker() {
       this.$emit("create-ticker", this.tickerInput);
-
       this.tickerInput = "";
     },
   },
